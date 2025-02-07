@@ -341,6 +341,290 @@ function getPersonDetails(): [string, number] {
 
 ---
 
-## Conclusión
-Este documento presenta una introducción a TypeScript con ejemplos claros para principiantes. Practica estos conceptos y expande tu conocimiento para aprovechar al máximo las capacidades de este poderoso lenguaje.
+# Guía de Aprendizaje: Fundamentos de TypeScript
+
+## Tipos Básicos
+
+### Tipo `any`
+
+Permite asignar valores de cualquier tipo, pero su uso se considera una mala práctica.
+
+```typescript
+let anyVariable: any = 10; // Puede almacenar cualquier tipo de valor
+anyVariable = "Hola";
+anyVariable = true;
+anyVariable = {};
+anyVariable = [];
+```
+
+### Tipo `void`
+
+Indica que una función no devuelve ningún valor.
+
+```typescript
+function noReturnFunction(): void {
+    console.log("Esto no devuelve nada");
+}
+```
+
+### Tipo `unknown`
+
+Permite almacenar cualquier tipo de valor, pero es más seguro que `any` porque requiere comprobaciones antes de usarlo.
+
+```typescript
+let unknownVariable: unknown = 10;
+unknownVariable = "Hola";
+unknownVariable = true;
+unknownVariable = {};
+unknownVariable = [];
+```
+
+### Tipo `never`
+
+Indica que una función nunca termina de manera correcta, ya que lanza una excepción o entra en un bucle infinito.
+
+```typescript
+function error(message: string): never {
+    throw new Error(message);
+}
+```
+
+## Tipos e Interfaces
+
+### Diferencias entre `type` e `interface`
+
+```typescript
+interface Hombre {
+    nombre: string;
+    edad: number;
+}
+
+type Masculino = {
+    nombre: string;
+    edad: number;
+};
+
+function getHombre(nombre: string, edad: number): Hombre {
+    return { nombre, edad };
+}
+
+function getMasculino(nombre: string, edad: number): Masculino {
+    return { nombre, edad };
+}
+```
+
+### Uso de `readonly`
+
+Las propiedades declaradas como `readonly` no pueden ser modificadas.
+
+```typescript
+type Heroe = {
+    readonly id?: string;
+    name: string;
+    age: number;
+    isActive?: boolean;
+};
+
+function createHeroe(heroe: Heroe): Heroe {
+    const { name, age } = heroe;
+    return {
+        id: crypto.randomUUID(),
+        name,
+        age,
+        isActive: true,
+    };
+}
+```
+
+## Literales de Plantilla
+
+```typescript
+type Color = string;
+type ColorHex = `#${string}`;
+
+const hexa: Color = "ff0000";
+const hexa2: ColorHex = "#ff0000";
+```
+
+## Tipos Indexados
+
+Permiten acceder a las propiedades de un tipo basándose en un índice.
+
+```typescript
+type Person = {
+    name: string;
+    address: {
+        city: string;
+        country: string;
+    };
+};
+
+type City = Person['address']['city']; // string
+```
+
+## Tuplas
+
+Listas de elementos con tipos definidos y una longitud fija.
+
+```typescript
+type Persona = [string, number, boolean];
+const persona: Persona = ["Juan", 30, true];
+```
+
+## Enumeraciones
+
+Proporcionan una forma de definir valores constantes con nombres significativos.
+
+```typescript
+enum ErrorType {
+    NotFound = "notFound",
+    Internal = "internal",
+    Unknown = "unknown"
+}
+
+function mostrarMensaje(tipoDeError: ErrorType) {
+    if (tipoDeError === ErrorType.NotFound) {
+        console.log("El recurso no existe");
+    } else if (tipoDeError === ErrorType.Internal) {
+        console.log("Error interno del servidor");
+    } else {
+        console.log("Error desconocido");
+    }
+}
+
+mostrarMensaje(ErrorType.NotFound);
+```
+
+## Aserciones de Tipo
+
+Permiten a TypeScript tratar una variable como un tipo específico.
+
+```typescript
+const button = document.getElementById("button") as HTMLButtonElement;
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+```
+
+## Comprobación de Tipos
+
+### `instanceof`
+
+Verifica si un objeto es una instancia de una clase.
+
+```typescript
+class Personal {
+    constructor(public name: string) {}
+}
+
+const personal = new Personal("John");
+if (personal instanceof Personal) {
+    console.log("El objeto es una instancia de Personal");
+}
+```
+
+### `typeof`
+
+Devuelve el tipo de una variable.
+
+```typescript
+let myVariable: any = 10;
+console.log(typeof myVariable); // "number"
+```
+
+## Interfaces Avanzadas
+
+### Anidamiento de Interfaces
+
+```typescript
+interface Producto {
+    id: number;
+    nombre: string;
+    precio: number;
+}
+
+interface Carrito {
+    productos: Producto[];
+    total: number;
+}
+```
+
+### Extensión de Interfaces
+
+```typescript
+interface Heroe extends Persona {
+    poderes: string[];
+}
+
+const superHeroe: Heroe = {
+    nombre: "Superman",
+    edad: 40,
+    altura: 1.90,
+    saludar: () => {
+        console.log(`Hola, soy Superman y tengo 40 años.`);
+    },
+    poderes: ["Invencibilidad", "Superfuerza"],
+};
+```
+
+## Narrowing (Discriminación de Tipos)
+
+```typescript
+function mostrarLongitud(objeto: number | string): number {
+    if (typeof objeto === "string") {
+        return objeto.length;
+    } else {
+        return objeto.toString().length;
+    }
+}
+```
+
+### Type Guards
+
+```typescript
+interface Mario {
+    company: "nintendo";
+    nombre: string;
+    saltar: () => void;
+}
+
+interface Sonic {
+    company: "sega";
+    nombre: string;
+    correr: () => void;
+}
+
+type Personaje = Mario | Sonic;
+
+function checkIsSonic(personaje: Personaje): personaje is Sonic {
+    return personaje.company === "sega";
+}
+
+function jugar(personaje: Personaje) {
+    if (checkIsSonic(personaje)) {
+        personaje.correr();
+    } else {
+        personaje.saltar();
+    }
+}
+```
+
+## Clases
+
+```typescript
+class Avenger {
+    public nombre: string;
+    public equipo: string;
+    private vida: number;
+
+    constructor(nombre: string, equipo: string, vida: number) {
+        this.nombre = nombre;
+        this.equipo = equipo;
+        this.vida = vida;
+    }
+}
+
+let avenger1 = new Avenger("Thor", "Avengers", 100);
+```
+
+
+
 
